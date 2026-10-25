@@ -1,0 +1,17 @@
+@startuml
+title Кинобездна. С4 уровень контекста
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "Пользователь", "Клиент")
+
+System(MainSystem, "Монолит", "Управление стриминговым контентом")
+SystemQueue(Sensor, "Рекомендательная система", "Подборки на основе интересов")
+SystemQueue(ExternalSystem, "Система интеграции", "Расширители функций стриминга")
+
+Rel(user, MainSystem, "Просмотр контента")
+Rel(Sensor, MainSystem, "Выдача подборки")
+Rel(ExternalSystem, MainSystem, "Расширение функционала")
+@enduml
