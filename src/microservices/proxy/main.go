@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"os"
 	"strconv"
-	"strings"
 )
 
 func newProxy(envKey string) *httputil.ReverseProxy {
@@ -31,16 +30,17 @@ func main() {
 	}
 	monolith := newProxy("MONOLITH_URL")
 	movies := newProxy("MOVIES_SERVICE_URL")
-    log.Println("Successfully read monolith and new_service urls")
-    log.Println(percent)
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		p := r.URL.Path
-		isMovies := p == "/api/movies" || strings.HasPrefix(p, "/api/movies/")
-		if isMovies && rand.IntN(100) < percent {
+
+	http.HandleFunc("/api/movies", func(w http.ResponseWriter, r *http.Request) {
+		rnd := rand.IntN(100)
+		log.Println(rnd)
+		if rnd < percent {
 			movies.ServeHTTP(w, r)
+			log.Println("go to microservice")
 			return
 		}
 		monolith.ServeHTTP(w, r)
+		log.Println("go to monolith")
 	})
 
 	log.Fatal(http.ListenAndServe(":8000", nil))
