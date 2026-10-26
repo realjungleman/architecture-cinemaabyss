@@ -7,15 +7,34 @@ top to bottom direction
 
 Person(user, "Пользователь", "Клиент")
 
-System(MainSystem, "Монолит", "Управление стриминговым сервисом")
+Container_Boundary(MainSystem, "Монолит", "Управление стриминговым сервисом"){
+    Container(Orchestrator, "Оркестратор микросервисов", "Go", "Управляет микросервисами")
+    ContainerDb(Database, "СУБД", "MongoDB", "Хранит профили, список просмотров, платежные данные, телеметрию")
+    ContainerQueue(RecommendationSystemQueue, "Очередь рекомендаций", "Kafka", "Принимает сообщения от внешних систем")
+    Container(ExternalGate, "Шлюз внешних систем", "Go", "Взаимодействует с протоколами внешних систем")
+    Container(OnlineCinemaGate, "Шлюз онлайн кинотеатров", "Go", "Взаимодействует с онлайн-кинотеатрами")
+    Container(MainSystemBack, "Основной бэкенд", "Go", "Управляет стриминговым сервисом")
+    Container(App, "Интерфейс пользователя", "Python, Django", "Интерфейс приложения")
+    Container(PaymentSystemGate, "Сервис оплаты", "Go", "Взаимодействует с платежной системой")
+    ContainerDb(S3, "Хранилище видеоданных", "S3", "Хранит видеоданные")
+}
 SystemQueue(RecommendationSystem, "Рекомендательная система", "Подборки на основе интересов")
 SystemQueue(ExternalSystem, "Система интеграций", "Расширители функций стриминга")
-System(OnlineCinema, "Онлайн-кинотеатр", "Дает доступ к картотеке видеофайлов")
+System(OnlineCinema, "Внешний онлайн-кинотеатр", "Дает доступ к картотеке видеофайлов")
 System(PaymentSystem, "Платежная система", "Проводит платежные транзакции")
 
-Rel(user, MainSystem, "Просмотр контента")
-Rel(RecommendationSystem, MainSystem, "Выдача подборки")
-Rel(ExternalSystem, MainSystem, "Расширение функционала")
-Rel(MainSystem, OnlineCinema, "Получение видео")
-Rel(MainSystem, PaymentSystem, "Обработка платежей")
+Rel(user, App, "")
+Rel(App, MainSystemBack, "")
+Rel(MainSystemBack, Orchestrator, "")
+Rel(Orchestrator, Database, "")
+Rel(Orchestrator, OnlineCinemaGate, "")
+Rel(Orchestrator, PaymentSystemGate, "")
+Rel(Orchestrator, S3, "")
+
+Rel(ExternalGate, RecommendationSystemQueue, "")
+Rel(RecommendationSystemQueue, MainSystemBack, "")
+Rel(RecommendationSystem, ExternalGate, "")
+Rel(ExternalSystem, ExternalGate, "")
+Rel(OnlineCinemaGate, OnlineCinema, "")
+Rel(PaymentSystemGate, PaymentSystem, "")
 @enduml
