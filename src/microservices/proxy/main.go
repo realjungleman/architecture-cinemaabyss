@@ -50,7 +50,7 @@ func main() {
 		log.Println("go to monolith")
 	})
 
-    http.HandleFunc("/api/proxy/health", handleHealth)
+    http.HandleFunc("/api/health", handleHealth)
 
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
