@@ -22,6 +22,7 @@ type MovieEvent struct {
 	Rating      float64  `json:"rating"`
 	Genres      []string `json:"genres"`
 	Description string   `json:"description"`
+	Success     string   `json:"success"`
 }
 
 type UserEvent struct {
@@ -30,6 +31,7 @@ type UserEvent struct {
 	Email     string    `json:"email"`
 	Action    string    `json:"action"`
 	Timestamp time.Time `json:"timestamp"`
+	Success   string   `json:"success"`
 }
 
 type PaymentEvent struct {
@@ -39,6 +41,7 @@ type PaymentEvent struct {
 	Status     string    `json:"status"`
 	Timestamp  time.Time `json:"timestamp"`
 	MethodType string    `json:"method_type"`
+	Success    string    `json:"success"`
 }
 
 var (
@@ -65,9 +68,11 @@ func randomMovie() (int, any) {
 		Title:       pick(titles),
 		Action:      pick(movieActions),
 		UserID:      rand.IntN(1000) + 1,
-		Rating:      float64(rand.IntN(91)+10) / 10, // 1.0 .. 10.0
+		Rating:      float64(rand.IntN(91)+10) / 10,
 		Genres:      g,
 		Description: "Random generated event",
+		Success:     "success",
+
 	}
 	return e.MovieID, e
 }
@@ -80,6 +85,7 @@ func randomUser() (int, any) {
 		Email:     name + "@example.com",
 		Action:    pick(userActions),
 		Timestamp: now(),
+		Success:   "success",
 	}
 	return e.UserID, e
 }
@@ -88,10 +94,11 @@ func randomPayment() (int, any) {
 	e := PaymentEvent{
 		PaymentID:  rand.IntN(100000) + 1,
 		UserID:     rand.IntN(1000) + 1,
-		Amount:     float64(rand.IntN(9900)+99) / 100, // 0.99 .. 99.98
+		Amount:     float64(rand.IntN(9900)+99) / 100,
 		Status:     pick(statuses),
 		Timestamp:  now(),
 		MethodType: pick(methods),
+		Success:    "success",
 	}
 	return e.PaymentID, e
 }
