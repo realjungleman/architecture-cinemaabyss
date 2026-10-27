@@ -64,6 +64,7 @@ func randomMovie() (int, any) {
 		g = append(g, genres[i])
 	}
 	e := MovieEvent{
+	    Success:     "success",
 		MovieID:     rand.IntN(1000) + 1,
 		Title:       pick(titles),
 		Action:      pick(movieActions),
@@ -71,7 +72,6 @@ func randomMovie() (int, any) {
 		Rating:      float64(rand.IntN(91)+10) / 10,
 		Genres:      g,
 		Description: "Random generated event",
-		Success:     "success",
 
 	}
 	return e.MovieID, e
@@ -80,25 +80,26 @@ func randomMovie() (int, any) {
 func randomUser() (int, any) {
 	name := pick(usernames)
 	e := UserEvent{
+	    Success:   "success",
 		UserID:    rand.IntN(1000) + 1,
 		Username:  name,
 		Email:     name + "@example.com",
 		Action:    pick(userActions),
 		Timestamp: now(),
-		Success:   "success",
 	}
 	return e.UserID, e
 }
 
 func randomPayment() (int, any) {
 	e := PaymentEvent{
+	    Success:     "success",
 		PaymentID:  rand.IntN(100000) + 1,
 		UserID:     rand.IntN(1000) + 1,
 		Amount:     float64(rand.IntN(9900)+99) / 100,
 		Status:     pick(statuses),
 		Timestamp:  now(),
 		MethodType: pick(methods),
-		Success:    "success",
+
 	}
 	return e.PaymentID, e
 }
