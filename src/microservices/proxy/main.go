@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"encoding/json"
 	"math/rand/v2"
 	"net/http"
 	"net/http/httputil"
@@ -21,6 +22,11 @@ func newProxy(envKey string) *httputil.ReverseProxy {
 			r.SetXForwarded()
 		},
 	}
+}
+
+func handleHealth(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]bool{"status": true})
 }
 
 func main() {
@@ -43,6 +49,8 @@ func main() {
 		monolith.ServeHTTP(w, r)
 		log.Println("go to monolith")
 	})
+
+    http.HandleFunc("/api/proxy/health", handleHealth)
 
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }

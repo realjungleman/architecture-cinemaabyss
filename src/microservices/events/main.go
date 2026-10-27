@@ -118,6 +118,11 @@ func handler(producer *kafka.Writer, topic string, generate func() (int, any)) h
 	}
 }
 
+func handleHealth(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]bool{"status": true})
+}
+
 func main() {
 	producer := &kafka.Writer{
 		Addr:         kafka.TCP(strings.Split(os.Getenv("KAFKA_BROKERS"), ",")...),
@@ -128,6 +133,7 @@ func main() {
 	http.HandleFunc("POST /api/events/movie", handler(producer, "movie-events", randomMovie))
 	http.HandleFunc("POST /api/events/user", handler(producer, "user-events", randomUser))
 	http.HandleFunc("POST /api/events/payment", handler(producer, "payment-events", randomPayment))
+	http.HandleFunc("/api/events/health", handleHealth)
 
 	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), nil))
 }
