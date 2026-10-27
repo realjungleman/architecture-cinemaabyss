@@ -50,7 +50,19 @@ func main() {
 		log.Println("go to monolith")
 	})
 
-    http.HandleFunc("/api/health", handleHealth)
+    http.HandleFunc("/health", handleHealth)
+
+    http.HandleFunc("/api/users", func(w http.ResponseWriter, r *http.Request) {
+        rnd := rand.IntN(100)
+		log.Println(rnd)
+		if rnd < percent && migrationFlg {
+			movies.ServeHTTP(w, r)
+			log.Println("go to microservice")
+			return
+		}
+		monolith.ServeHTTP(w, r)
+		log.Println("go to monolith")
+    })
 
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
