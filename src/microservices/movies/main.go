@@ -31,6 +31,7 @@ func main() {
 	// Set up HTTP routes
 	http.HandleFunc("/api/movies", handleMovies)
 	http.HandleFunc("/api/movies/health", handleHealth)
+	http.HandleFunc("/api/users", handleUsers)
 
 	// Start server
 	port := os.Getenv("PORT")
@@ -76,6 +77,21 @@ func handleMovies(w http.ResponseWriter, r *http.Request) {
 		}
 	case "POST":
 		createMovie(w, r)
+	default:
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func handleUsers(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		if r.URL.Query().Get("id") != "" {
+			getUserByID(w, r)
+		} else {
+			getAllUsers(w, r)
+		}
+	case "POST":
+		createUser(w, r)
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
