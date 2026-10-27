@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+    "time"
 
 	_ "github.com/lib/pq"
 )
@@ -15,12 +16,33 @@ import (
 var db *sql.DB
 
 // Models
+type User struct {
+	ID       int    `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}
+
 type Movie struct {
 	ID          int      `json:"id"`
 	Title       string   `json:"title"`
 	Description string   `json:"description"`
 	Genres      []string `json:"genres"`
 	Rating      float64  `json:"rating"`
+}
+
+type Payment struct {
+	ID        int       `json:"id"`
+	UserID    int       `json:"user_id"`
+	Amount    float64   `json:"amount"`
+	Timestamp time.Time `json:"timestamp"`
+}
+
+type Subscription struct {
+	ID        int       `json:"id"`
+	UserID    int       `json:"user_id"`
+	PlanType  string    `json:"plan_type"`
+	StartDate time.Time `json:"start_date"`
+	EndDate   time.Time `json:"end_date"`
 }
 
 func main() {
@@ -64,6 +86,59 @@ func initDB() {
 func handleHealth(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]bool{"status": true})
+}
+
+func getAllUsers(w http.ResponseWriter, r *http.Request) {
+	rows, err := db.Query("SELECT id, username, email FROM users")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	users := []User{}
+	for rows.Next() {
+		var u User
+		if err := rows.Scan(&u.ID, &u.Username, &u.Email); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		users = append(users, u)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(users)
+}
+
+func getUserByID(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	var u User
+	err := db.QueryRow("SELECT id, username, email FROM users WHERE id = $1", id).Scan(&u.ID, &u.Username, &u.Email)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(u)
+}
+
+func createUser(w http.ResponseWriter, r *http.Request) {
+	var u User
+	if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err := db.QueryRow("INSERT INTO users (username, email) VALUES ($1, $2) RETURNING id", u.Username, u.Email).Scan(&u.ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(u)
 }
 
 // Movie handlers
