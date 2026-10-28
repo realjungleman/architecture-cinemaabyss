@@ -120,6 +120,8 @@ jobs:
 Как только сборка отработает и в github registry появятся ваши образы, можно переходить к блоку настройки Kubernetes
 Успешным результатом данного шага является "зеленая" сборка и "зеленые" тесты
 
+![docker_build](3_task/docker_build.png)
+![api_test](3_task/api_test.png)
 
 ### Proxy в Kubernetes
 
@@ -282,10 +284,20 @@ cat .docker/config.json | base64
   ```
   Часть тестов с health-чек упадет, но создание событий отработает.
   Откройте логи event-service и сделайте скриншот обработки событий
+  ![events_tests](3_task/events_tests.png)
 
 #### Шаг 3
 Добавьте сюда скриншота вывода при вызове https://cinemaabyss.example.com/api/movies и  скриншот вывода event-service после вызова тестов.
+sudo kubectl --kubeconfig "$HOME/.kube/config" port-forward -n ingress-nginx svc/ingress-nginx-controller 80:80
+Forwarding from 127.0.0.1:80 -> 80
+Forwarding from [::1]:80 -> 80
+Handling connection for 80
+Handling connection for 80
+Handling connection for 80
+Handling connection for 80
+Handling connection for 80
 
+![movies_postman](3_task/movies_postman.png)
 
 # Задание 4
 Для простоты дальнейшего обновления и развертывания вам как архитектуру необходимо так же реализовать helm-чарты для прокси-сервиса и проверить работу 
