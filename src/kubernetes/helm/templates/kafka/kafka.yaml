@@ -62,6 +62,9 @@ spec:
       - name: zookeeper
         image: {{ .Values.zookeeper.image.repository }}:{{ .Values.zookeeper.image.tag }}
         imagePullPolicy: {{ .Values.zookeeper.image.pullPolicy }}
+        # nofile в подах огромный (~2^31), старая JVM на нём получает OOM при старте
+        command: ["/bin/sh", "-c"]
+        args: ["ulimit -n 65536 && exec /opt/zookeeper-3.4.13/bin/zkServer.sh start-foreground"]
         ports:
         - containerPort: 2181
           name: client
