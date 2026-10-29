@@ -23,6 +23,10 @@ spec:
       labels:
         app: monolith
     spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox:1.36
+        command: ["sh", "-c", "until nc -z postgres 5432; do sleep 2; done"]
       containers:
       - name: monolith
         image: {{ .Values.monolith.image.repository }}:{{ .Values.monolith.image.tag }}

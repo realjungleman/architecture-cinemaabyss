@@ -48,6 +48,8 @@ spec:
       containers:
       - name: zookeeper
         image: wurstmeister/zookeeper
+        command: ["/bin/sh", "-c"]
+        args: ["ulimit -n 65536 && exec /opt/zookeeper-3.4.13/bin/zkServer.sh start-foreground"]
         ports:
         - containerPort: 2181
           name: client
@@ -60,9 +62,11 @@ spec:
             memory: "256Mi"
             cpu: "100m"
           limits:
-            memory: "512Mi"
+            memory: "1Gi"
             cpu: "500m"
         env:
+        - name: JVMFLAGS
+          value: "-Xmx256m -Xms128m"
         - name: ZOOKEEPER_CLIENT_PORT
           value: "2181"
         - name: ZOOKEEPER_TICK_TIME

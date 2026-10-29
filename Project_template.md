@@ -5,7 +5,8 @@
 1. Спроектируйте to be архитектуру КиноБездны, разделив всю систему на отдельные домены и организовав интеграционное взаимодействие и единую точку вызова сервисов.
 Результат представьте в виде контейнерной диаграммы в нотации С4.
 Добавьте ссылку на файл в этот шаблон
-[ссылка на файл](ссылка)
+![C4 Context](1_task/c4_context.png)
+![C4 Container](1_task/c4_container.png)
 
 # Задание 2
 
@@ -45,10 +46,12 @@
    curl http://localhost:8000/api/movies
    ```
 - Протестируйте постепенный переход, изменив переменную окружения MOVIES_MIGRATION_PERCENT в файле docker-compose.yml.
+- Изменение MOVIES_MIGRATION_PERCENT влияет на процент использования монолита и микросервиса. 
+При установке в 100, все запросы идут в микросервис, при 0 - в монолит
 
 
 ### 2. Kafka
- Вам как архитектуру нужно также проверить гипотезу насколько просто реализовать применение Kafka в данной архитектуре.
+ Вам как архитектору нужно также проверить гипотезу насколько просто реализовать применение Kafka в данной архитектуре.
 
 Для этого нужно сделать MVP сервис events, который будет при вызове API создавать и сам же читать сообщения в топике Kafka.
 
@@ -58,6 +61,14 @@
 
 Необходимые тесты для проверки этого API вызываются при запуске npm run test:local из папки tests/postman 
 Приложите скриншот тестов и скриншот состояния топиков Kafka из UI http://localhost:8090 
+
+![npm_1](2_task/npm_1.png)
+![npm_2](2_task/npm_2.png)
+![npm_3](2_task/npm_3.png)
+![npm_4](2_task/npm_4.png)
+![npm_5](2_task/npm_5.png)
+
+![kafka_ui](2_task/kafka_ui.png)
 
 # Задание 3
 
@@ -109,6 +120,8 @@ jobs:
 Как только сборка отработает и в github registry появятся ваши образы, можно переходить к блоку настройки Kubernetes
 Успешным результатом данного шага является "зеленая" сборка и "зеленые" тесты
 
+![docker_build](3_task/docker_build.png)
+![api_test](3_task/api_test.png)
 
 ### Proxy в Kubernetes
 
@@ -271,10 +284,22 @@ cat .docker/config.json | base64
   ```
   Часть тестов с health-чек упадет, но создание событий отработает.
   Откройте логи event-service и сделайте скриншот обработки событий
+  ![events_tests](3_task/events_tests.png)
 
 #### Шаг 3
 Добавьте сюда скриншота вывода при вызове https://cinemaabyss.example.com/api/movies и  скриншот вывода event-service после вызова тестов.
 
+sudo kubectl --kubeconfig "$HOME/.kube/config" port-forward -n ingress-nginx svc/ingress-nginx-controller 80:80
+
+Forwarding from 127.0.0.1:80 -> 80
+Forwarding from [::1]:80 -> 80
+Handling connection for 80
+Handling connection for 80
+Handling connection for 80
+Handling connection for 80
+Handling connection for 80
+
+![movies_postman](3_task/movies_postman.png)
 
 # Задание 4
 Для простоты дальнейшего обновления и развертывания вам как архитектуру необходимо так же реализовать helm-чарты для прокси-сервиса и проверить работу 
@@ -349,6 +374,12 @@ minikube tunnel
 Потом вызовите 
 https://cinemaabyss.example.com/api/movies
 и приложите скриншот развертывания helm и вывода https://cinemaabyss.example.com/api/movies
+
+На Линуксе запускал helm так:
+helm install cinemaabyss ./src/kubernetes/helm --namespace cinemaabyss --create-namespace
+
+![helm_install](4_task/helm_install.png)
+![movies_postman](4_task/movies_postman.png)
 
 ## Удаляем все
 
