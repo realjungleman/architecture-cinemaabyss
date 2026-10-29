@@ -13,7 +13,7 @@ This Helm chart deploys the CinemaAbyss application on a Kubernetes cluster.
 To install the chart with the release name `cinemaabyss`:
 
 ```bash
-helm install cinemaabyss ./cinemaabyss
+helm install cinemaabyss ./src/kubernetes/helm --namespace cinemaabyss --create-namespace
 ```
 
 The command deploys CinemaAbyss on the Kubernetes cluster with default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
@@ -23,7 +23,8 @@ The command deploys CinemaAbyss on the Kubernetes cluster with default configura
 To uninstall/delete the `cinemaabyss` deployment:
 
 ```bash
-helm uninstall cinemaabyss
+kubectl delete all --all -n cinemaabyss
+kubectl delete namespace cinemaabyss
 ```
 
 ## Parameters
