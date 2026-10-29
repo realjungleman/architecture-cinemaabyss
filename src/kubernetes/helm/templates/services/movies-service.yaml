@@ -23,6 +23,10 @@ spec:
       labels:
         app: movies-service
     spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox:1.36
+        command: ["sh", "-c", "until nc -z postgres 5432; do sleep 2; done"]
       containers:
       - name: movies-service
         image: {{ .Values.moviesService.image.repository }}:{{ .Values.moviesService.image.tag }}

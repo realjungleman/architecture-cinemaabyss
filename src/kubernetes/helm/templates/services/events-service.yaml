@@ -31,7 +31,7 @@ spec:
         - containerPort: {{ .Values.eventsService.service.targetPort }}
         env:
         - name: PORT
-          value: "8082"
+          value: "{{ .Values.eventsService.service.targetPort }}"
         - name: KAFKA_BROKERS
           value: "kafka:9092"
         - name: DB_CONNECTION_STRING
@@ -72,7 +72,7 @@ spec:
   selector:
     app: events-service
   ports:
-  - port: 8082
-    targetPort: 8082
-  type: ClusterIP
+  - port: {{ .Values.eventsService.service.port }}
+    targetPort: {{ .Values.eventsService.service.targetPort }}
+  type: {{ .Values.eventsService.service.type }}
 {{- end }}
