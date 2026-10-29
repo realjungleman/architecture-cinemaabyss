@@ -288,7 +288,9 @@ cat .docker/config.json | base64
 
 #### Шаг 3
 Добавьте сюда скриншота вывода при вызове https://cinemaabyss.example.com/api/movies и  скриншот вывода event-service после вызова тестов.
+
 sudo kubectl --kubeconfig "$HOME/.kube/config" port-forward -n ingress-nginx svc/ingress-nginx-controller 80:80
+
 Forwarding from 127.0.0.1:80 -> 80
 Forwarding from [::1]:80 -> 80
 Handling connection for 80
@@ -372,6 +374,9 @@ minikube tunnel
 Потом вызовите 
 https://cinemaabyss.example.com/api/movies
 и приложите скриншот развертывания helm и вывода https://cinemaabyss.example.com/api/movies
+
+На Линуксе запускал helm так:
+helm install cinemaabyss ./src/kubernetes/helm --namespace cinemaabyss --create-namespace
 
 ![helm_install](4_task/helm_install.png)
 ![movies_postman](4_task/movies_postman.png)
